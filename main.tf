@@ -112,7 +112,6 @@ resource "aws_iam_policy" "policy" {
 #}
 
 resource "aws_spot_instance_request" "rabbitmq" {
-  Name  = "${var.env}-rabbitmq-instance"
   ami           = data.aws_ami.centos8.id
   instance_type = "t3.small"
   vpc_security_group_ids = [aws_security_group.rabbitmq.id]
