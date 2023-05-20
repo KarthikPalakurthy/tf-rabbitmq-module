@@ -128,7 +128,7 @@ resource "aws_spot_instance_request" "rabbitmq" {
 
 resource "aws_route53_record" "rabbitmq" {
   zone_id = "Z0636942108K930OU3P3D"
-  name    = "rabbitmq-${var.env}-devpractice.online"
+  name    = "rabbitmq-${var.env}.devpractice.online"
   type    = "A"
   ttl     = 30
   records = [aws_spot_instance_request.rabbitmq.private_ip]
