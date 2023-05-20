@@ -115,7 +115,7 @@ resource "aws_spot_instance_request" "rabbitmq" {
   ami           = data.aws_ami.centos8.id
   instance_type = "t3.small"
   vpc_security_group_ids = [aws_security_group.rabbitmq.id]
-  subnet_id = var.subnet_ids
+  subnet_id = var.subnet_ids[0]
   wait_for_fulfillment = true
   user_data = base64encode(templatefile("${path.module}/user-data.sh", { component = var.component , env = var.env} ))
 
