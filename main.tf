@@ -92,6 +92,12 @@ resource "aws_iam_policy" "policy" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "attachment" {
+  role       = aws_iam_role.role.name
+  policy_arn = aws_iam_policy.policy.arn
+}
+
+
 #resource "aws_mq_broker" "rabbitmq" {
 #  broker_name = "${var.env}-rabbitmq"
 #  engine_type        = var.engine_type
