@@ -155,5 +155,6 @@ resource "aws_route53_record" "rabbitmq" {
   name    = "rabbitmq-${var.env}.devpractice.online"
   type    = "A"
   ttl     = 30
-  records = [aws_spot_instance_request.rabbitmq.private_ip]
+#  records = [aws_spot_instance_request.rabbitmq.private_ip]
+  records = [aws_instance.rabbitmq.private_ip]
 }
