@@ -141,7 +141,7 @@ resource "aws_instance" "rabbitmq" {
   vpc_security_group_ids = [aws_security_group.rabbitmq.id]
   subnet_id = var.subnet_ids[0]
   user_data = base64encode(templatefile("${path.module}/user-data.sh", { component = var.component , env = var.env} ))
-  iam_instance_profile = aws_iam_instance_profile.profile.arn
+  iam_instance_profile = aws_iam_instance_profile.profile.name
 
   tags = merge(
     local.common_tags,
