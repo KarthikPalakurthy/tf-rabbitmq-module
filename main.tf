@@ -98,50 +98,35 @@ resource "aws_iam_role_policy_attachment" "attachment" {
 }
 
 
-#resource "aws_mq_broker" "rabbitmq" {
-#  broker_name = "${var.env}-rabbitmq"
-#  engine_type        = var.engine_type
-#  engine_version     = var.engine_version
-#  host_instance_type = var.host_instance_type
-#  security_groups    = [aws_security_group.rabbitmq.id]
-#  subnet_ids = var.deployment_mode == "SINGLE_INSTANCE" ? [var.subnet_ids[0]] : var.subnet_ids
-#
-#  user {
-#    username = data.aws_ssm_parameter.USER.value
-#    password = data.aws_ssm_parameter.PASS.value
-#  }
-#
-#  encryption_options {
-#    use_aws_owned_key = false
-#    kms_key_id = data.aws_kms_key.key.arn
-#  }
-#}
+resource "aws_mq_broker" "rabbitmq" {
+  broker_name = "${var.env}-rabbitmq"
+  engine_type        = var.engine_type
+  engine_version     = var.engine_version
+  host_instance_type = var.host_instance_type
+  security_groups    = [aws_security_group.rabbitmq.id]
+  subnet_ids = var.deployment_mode == "SINGLE_INSTANCE" ? [var.subnet_ids[0]] : var.subnet_ids
+
+  user {
+    username = data.aws_ssm_parameter.USER.value
+    password = data.aws_ssm_parameter.PASS.value
+  }
+
+  encryption_options {
+    use_aws_owned_key = false
+    kms_key_id = data.aws_kms_key.key.arn
+  }
+}
 
 # This is to be used for spot instance creation
-#resource "aws_spot_instance_request" "rabbitmq" {
-#  ami           = data.aws_ami.centos8.id
-#  instance_type = "t3.small"
-#  vpc_security_group_ids = [aws_security_group.rabbitmq.id]
-#  subnet_id = var.subnet_ids[0]
-#  wait_for_fulfillment = true
-#  user_data = base64encode(templatefile("${path.module}/user-data.sh", { component = var.component , env = var.env} ))
-#  iam_instance_profile = aws_iam_instance_profile.profile.name
-#
-#
-#  tags = merge(
-#    local.common_tags,
-#    { Name = "${var.env}-rabbitmq"}
-#  )
-#}
-
-# Use only if spot instance creation fails
-resource "aws_instance" "rabbitmq" {
+resource "aws_spot_instance_request" "rabbitmq" {
   ami           = data.aws_ami.centos8.id
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   vpc_security_group_ids = [aws_security_group.rabbitmq.id]
   subnet_id = var.subnet_ids[0]
+  wait_for_fulfillment = true
   user_data = base64encode(templatefile("${path.module}/user-data.sh", { component = var.component , env = var.env} ))
   iam_instance_profile = aws_iam_instance_profile.profile.name
+
 
   tags = merge(
     local.common_tags,
@@ -149,12 +134,27 @@ resource "aws_instance" "rabbitmq" {
   )
 }
 
+# Use only if spot instance creation fails
+#resource "aws_instance" "rabbitmq" {
+#  ami           = data.aws_ami.centos8.id
+#  instance_type = "t3.micro"
+#  vpc_security_group_ids = [aws_security_group.rabbitmq.id]
+#  subnet_id = var.subnet_ids[0]
+#  user_data = base64encode(templatefile("${path.module}/user-data.sh", { component = var.component , env = var.env} ))
+#  iam_instance_profile = aws_iam_instance_profile.profile.name
+#
+#  tags = merge(
+#    local.common_tags,
+#    { Name = "${var.env}-rabbitmq"}
+#  )
+#}
+
 
 resource "aws_route53_record" "rabbitmq" {
   zone_id = "Z0636942108K930OU3P3D"
   name    = "rabbitmq-${var.env}.devpractice.online"
   type    = "A"
   ttl     = 30
-#  records = [aws_spot_instance_request.rabbitmq.private_ip]
-  records = [aws_instance.rabbitmq.private_ip]
+  records = [aws_spot_instance_request.rabbitmq.private_ip]
+#  records = [aws_instance.rabbitmq.private_ip]
 }
