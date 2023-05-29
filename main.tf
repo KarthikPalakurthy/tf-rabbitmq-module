@@ -98,24 +98,24 @@ resource "aws_iam_role_policy_attachment" "attachment" {
 }
 
 
-resource "aws_mq_broker" "rabbitmq" {
-  broker_name = "${var.env}-rabbitmq"
-  engine_type        = var.engine_type
-  engine_version     = var.engine_version
-  host_instance_type = var.host_instance_type
-  security_groups    = [aws_security_group.rabbitmq.id]
-  subnet_ids = var.deployment_mode == "SINGLE_INSTANCE" ? [var.subnet_ids[0]] : var.subnet_ids
-
-  user {
-    username = data.aws_ssm_parameter.USER.value
-    password = data.aws_ssm_parameter.PASS.value
-  }
-
-  encryption_options {
-    use_aws_owned_key = false
-    kms_key_id = data.aws_kms_key.key.arn
-  }
-}
+#resource "aws_mq_broker" "rabbitmq" {
+#  broker_name = "${var.env}-rabbitmq"
+#  engine_type        = var.engine_type
+#  engine_version     = var.engine_version
+#  host_instance_type = var.host_instance_type
+#  security_groups    = [aws_security_group.rabbitmq.id]
+#  subnet_ids = var.deployment_mode == "SINGLE_INSTANCE" ? [var.subnet_ids[0]] : var.subnet_ids
+#
+#  user {
+#    username = data.aws_ssm_parameter.USER.value
+#    password = data.aws_ssm_parameter.PASS.value
+#  }
+#
+#  encryption_options {
+#    use_aws_owned_key = false
+#    kms_key_id = data.aws_kms_key.key.arn
+#  }
+#}
 
 # This is to be used for spot instance creation
 resource "aws_spot_instance_request" "rabbitmq" {
