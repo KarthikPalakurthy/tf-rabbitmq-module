@@ -134,6 +134,12 @@ resource "aws_spot_instance_request" "rabbitmq" {
   )
 }
 
+resource "aws_ssm_parameter" "rabbitmq_endpoint" {
+  name  = "${var.env}.rabbitmq.ENDPOINT"
+  type  = "String"
+  value = aws_mq_broker.rabbitmq.instances.0.endpoint.0
+}
+
 # Use only if spot instance creation fails
 #resource "aws_instance" "rabbitmq" {
 #  ami           = data.aws_ami.centos8.id
